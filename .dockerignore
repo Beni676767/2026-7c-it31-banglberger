@@ -1,0 +1,8 @@
+node_modules
+dist
+dist-static
+.git
+.github
+.env
+data/*.db
+snippets

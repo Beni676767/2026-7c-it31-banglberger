@@ -1,0 +1,8 @@
+[
+  { "id": 1, "title": "Git-Repository anlegen", "category": "Setup", "note": "Aus dem Template erstellt und in VS Code geklont.", "done": true, "createdAt": "2026-10-19T08:00:00.000Z" },
+  { "id": 2, "title": "API testen", "category": "Backend", "note": "GET /api/items im Browser öffnen.", "done": false, "createdAt": "2026-10-19T08:05:00.000Z" },
+  { "id": 3, "title": "Oberfläche gestalten", "category": "Frontend", "note": "Eigene Farben in style.css festlegen.", "done": false, "createdAt": "2026-10-19T08:10:00.000Z" },
+  { "id": 4, "title": "Daten dauerhaft speichern", "category": "Datenbank", "note": "SQLite statt Arbeitsspeicher.", "done": false, "createdAt": "2026-10-19T08:15:00.000Z" },
+  { "id": 5, "title": "Als Container starten", "category": "Deployment", "note": "docker compose up", "done": false, "createdAt": "2026-10-19T08:20:00.000Z" },
+  { "id": 6, "title": "Per iframe einbetten", "category": "Deployment", "note": "Statischer Build in eine HTML-Seite einbinden.", "done": false, "createdAt": "2026-10-19T08:25:00.000Z" }
+]

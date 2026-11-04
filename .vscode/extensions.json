@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "ms-azuretools.vscode-docker",
+    "vitest.explorer",
+    "usernamehw.errorlens",
+    "qwtel.sqlite-viewer",
+    "rangav.vscode-thunder-client",
+    "github.vscode-pull-request-github",
+    "github.vscode-github-actions",
+    "yoavbls.pretty-ts-errors"
+  ]
+}

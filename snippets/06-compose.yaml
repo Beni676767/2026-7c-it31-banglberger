@@ -1,0 +1,15 @@
+# Aufgabe 6 – Referenzlösung: speichere als "compose.yaml" im Projektordner
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DATABASE_PATH: /app/data/app.db
+    volumes:
+      - app-data:/app/data   # Datenbank bleibt auch nach "docker compose down" erhalten
+    restart: unless-stopped
+
+volumes:
+  app-data:

@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+
+/* Eigene Farben: ändere sie hier einmal, dann gelten sie überall (Tailwind: bg-brand, text-brand ...) */
+@theme {
+  --color-brand: #005a9c;
+  --color-brand-dark: #003366;
+}

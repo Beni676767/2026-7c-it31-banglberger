@@ -1,0 +1,30 @@
+{
+  "name": "Fullstack App (Node 22)",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:22",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "forwardPorts": [5173, 3000],
+  "portsAttributes": {
+    "5173": { "label": "Frontend (Vite)" },
+    "3000": { "label": "Backend (Hono)" }
+  },
+  "postCreateCommand": "npm install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "ms-azuretools.vscode-docker",
+        "vitest.explorer",
+        "usernamehw.errorlens",
+        "qwtel.sqlite-viewer",
+        "rangav.vscode-thunder-client",
+        "github.vscode-pull-request-github",
+        "github.vscode-github-actions",
+        "yoavbls.pretty-ts-errors"
+      ]
+    }
+  }
+}

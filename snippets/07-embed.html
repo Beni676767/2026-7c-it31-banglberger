@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Einbettung der Fullstack-App</title>
+  </head>
+  <body>
+    <h1>Meine Seite mit eingebetteter App</h1>
+
+    <!-- Variante A: iframe (einfachste Lösung, wie in SharePoint/Teams/Moodle) -->
+    <iframe
+      src="./dist-static/index.html"
+      title="Meine App"
+      style="width: 100%; height: 600px; border: 1px solid #ccc; border-radius: 8px"
+    ></iframe>
+
+    <!-- Variante B: App direkt in die Seite laden (kein iframe, teilt sich das Styling) -->
+    <div data-kepler-app></div>
+    <!-- <script type="module" src="./dist-static/assets/index-XXXX.js"></script> -->
+  </body>
+</html>
