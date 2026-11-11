@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "concurrently -n api,web -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
     "dev:server": "tsx watch src/server/index.ts",
@@ -21,6 +23,7 @@
     "drizzle-orm": "^0.45.4",
     "hono": "^4.13.13",
     "preact": "^11.0.1",
+    "rapid-draughts": "^1.0.6",
     "tsx": "^4.23.15",
     "zod": "^4.6.7"
   },
