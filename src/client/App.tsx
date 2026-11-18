@@ -1,174 +1,101 @@
-import { useEffect, useRef, useState } from 'preact/hooks'
-import { DraughtsPlayer, DraughtsStatus } from 'rapid-draughts'
-import {
-  EnglishDraughts,
-  EnglishDraughtsComputerFactory,
-  type EnglishDraughtsComputer,
-  type EnglishDraughtsGame,
-} from 'rapid-draughts/english'
+import { useState } from 'preact/hooks'
 
-type GameMode = 'computer' | 'local'
+type Cell = 'X' | 'O' | null
+
+const winningLines = [
+  [0, 1, 2], [3, 4, 5], [6, 7, 8],
+  [0, 3, 6], [1, 4, 7], [2, 5, 8],
+  [0, 4, 8], [2, 4, 6],
+]
+
+function getWinner(board: Cell[]) {
+  for (const [a, b, c] of winningLines) {
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return { symbol: board[a], line: [a, b, c] as number[] }
+    }
+  }
+  return null
+}
 
 export function App() {
-  const gameRef = useRef<EnglishDraughtsGame | null>(null)
-  const computerRef = useRef<EnglishDraughtsComputer | null>(null)
-  if (!gameRef.current) gameRef.current = EnglishDraughts.setup()
-  if (!computerRef.current) computerRef.current = EnglishDraughtsComputerFactory.alphaBeta({ maxDepth: 5 })
+  const [board, setBoard] = useState<Cell[]>(Array(9).fill(null))
+  const [currentPlayer, setCurrentPlayer] = useState<'X' | 'O'>('X')
+  const [scores, setScores] = useState({ X: 0, O: 0, draw: 0 })
 
-  const game = gameRef.current
-  const [mode, setMode] = useState<GameMode>('computer')
-  const [turn, setTurn] = useState(0)
-  const [selectedPosition, setSelectedPosition] = useState<number | null>(null)
-  const [thinking, setThinking] = useState(false)
-  const [computerError, setComputerError] = useState(false)
+  const winner = getWinner(board)
+  const isDraw = !winner && board.every(Boolean)
+  const gameOver = Boolean(winner || isDraw)
 
-  useEffect(() => {
-    if (mode !== 'computer' || game.player !== DraughtsPlayer.LIGHT || game.status !== DraughtsStatus.PLAYING) return
+  function playMove(index: number) {
+    if (board[index] || gameOver) return
 
-    let cancelled = false
-    setThinking(true)
-    setComputerError(false)
-    void computerRef.current!(game)
-      .then((move) => {
-        if (cancelled) return
-        game.move(move)
-        setSelectedPosition(null)
-        setTurn((value) => value + 1)
-      })
-      .catch(() => {
-        if (!cancelled) setComputerError(true)
-      })
-      .finally(() => {
-        if (!cancelled) setThinking(false)
-      })
+    const nextBoard = [...board]
+    nextBoard[index] = currentPlayer
+    const nextWinner = getWinner(nextBoard)
 
-    return () => {
-      cancelled = true
+    if (nextWinner) {
+      setScores((value) => ({ ...value, [nextWinner.symbol!]: value[nextWinner.symbol!] + 1 }))
+      setBoard(nextBoard)
+      return
     }
-  }, [game, mode, turn])
 
-  const humanTurn = mode === 'local' || game.player === DraughtsPlayer.DARK
-  const darkPieces = game.board.filter((square) => square.dark && square.piece?.player === DraughtsPlayer.DARK).length
-  const lightPieces = game.board.filter((square) => square.dark && square.piece?.player === DraughtsPlayer.LIGHT).length
-  const boardSquares = mode === 'computer' ? [...game.board].reverse() : game.board
-  const gameOver = game.status !== DraughtsStatus.PLAYING
+    if (nextBoard.every(Boolean)) {
+      setScores((value) => ({ ...value, draw: value.draw + 1 }))
+      setBoard(nextBoard)
+      return
+    }
 
-  function startNewGame(nextMode = mode) {
-    gameRef.current = EnglishDraughts.setup()
-    setMode(nextMode)
-    setSelectedPosition(null)
-    setThinking(false)
-    setComputerError(false)
-    setTurn((value) => value + 1)
+    setBoard(nextBoard)
+    setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X')
   }
 
-  function selectSquare(position: number) {
-    if (gameOver || !humanTurn || thinking) return
-
-    const piece = game.board.find((square) => square.dark && square.position === position)?.piece
-    const move = selectedPosition === null
-      ? undefined
-      : game.moves.find((candidate) => candidate.origin === selectedPosition && candidate.destination === position)
-
-    if (move) {
-      game.move(move)
-      setSelectedPosition(null)
-      setTurn((value) => value + 1)
-      return
-    }
-
-    if (piece?.player === game.player) {
-      setSelectedPosition((current) => current === position ? null : position)
-      return
-    }
-
-    setSelectedPosition(null)
+  function newRound() {
+    setBoard(Array(9).fill(null))
+    setCurrentPlayer('X')
   }
 
   function statusText() {
-    if (game.status === DraughtsStatus.DRAW) return 'Unentschieden'
-    if (game.status === DraughtsStatus.DARK_WON) return mode === 'computer' ? 'Du hast gewonnen' : 'Dunkel gewinnt'
-    if (game.status === DraughtsStatus.LIGHT_WON) return mode === 'computer' ? 'Der Computer gewinnt' : 'Rot gewinnt'
-    if (mode === 'computer' && game.player === DraughtsPlayer.LIGHT) return thinking ? 'Computer denkt nach' : 'Computer ist am Zug'
-    return mode === 'computer' ? 'Du bist am Zug' : `${game.player === DraughtsPlayer.DARK ? 'Dunkel' : 'Rot'} ist am Zug`
+    if (winner) return `${winner.symbol} gewinnt!`
+    if (isDraw) return 'Unentschieden'
+    return `${currentPlayer} ist am Zug`
   }
 
   return (
     <main class="game-page">
       <header class="game-header">
         <div>
-          <p class="game-eyebrow">DAME / 01</p>
-          <h1>Checkers</h1>
+          <p class="game-eyebrow">GAMING / 01</p>
+          <h1>Tic Tac Toe</h1>
         </div>
-        <button class="new-game-button" type="button" onClick={() => startNewGame()}>
-          Neues Spiel
+        <button class="new-game-button" type="button" onClick={newRound}>
+          Neue Runde
         </button>
       </header>
 
       <div class="game-layout">
-        <section class="board-column" aria-label="Spielbrett">
+        <section class="board-column" aria-label="Tic-Tac-Toe-Spielfeld">
           <div class="board-frame">
-            <div class="checkers-board">
-              {boardSquares.map((square, index) => {
-                const position = square.dark ? square.position : undefined
-                const selected = position !== undefined && selectedPosition === position
-                const legalMove = position !== undefined && game.moves.some(
-                  (move) => move.origin === selectedPosition && move.destination === position,
-                )
-                const row = Math.floor(index / 8) + 1
-                const column = (index % 8) + 1
-                const label = square.piece
-                  ? `${square.piece.player === DraughtsPlayer.DARK ? 'Dunkler' : 'Roter'} ${square.piece.king ? 'König' : 'Stein'}`
-                  : square.dark ? 'Freies Feld' : 'Helles Feld'
-
+            <div class="tic-tac-toe-board">
+              {board.map((cell, index) => {
+                const isWinning = winner?.line.includes(index) ?? false
                 return (
                   <button
                     key={index}
                     type="button"
-                    class={`board-square ${square.dark ? 'square-dark' : 'square-light'}${selected ? ' is-selected' : ''}${legalMove ? ' is-legal' : ''}`}
-                    disabled={!square.dark || !humanTurn || gameOver || thinking}
-                    aria-label={`${label}, Reihe ${row}, Spalte ${column}`}
-                    aria-pressed={selected}
-                    onClick={() => position !== undefined && selectSquare(position)}
+                    class={`game-cell${cell ? ` has-${cell.toLowerCase()}` : ''}${isWinning ? ' is-winning' : ''}`}
+                    aria-label={cell ? `Feld ${index + 1}: ${cell}` : `Feld ${index + 1} frei`}
+                    disabled={Boolean(cell) || gameOver}
+                    onClick={() => playMove(index)}
                   >
-                    {square.piece && (
-                      <span class={`checker-piece ${square.piece.player === DraughtsPlayer.DARK ? 'piece-dark' : 'piece-light'}${square.piece.king ? ' is-king' : ''}`}>
-                        {square.piece.king && <span aria-hidden="true">K</span>}
-                      </span>
-                    )}
-                    {legalMove && !square.piece && <span class="move-marker" aria-hidden="true" />}
+                    {cell && <span>{cell}</span>}
                   </button>
                 )
               })}
             </div>
           </div>
-          <div class="board-caption">
-            <span><i class="player-swatch swatch-dark" /> Dunkel</span>
-            <span><i class="player-swatch swatch-light" /> Rot</span>
-            <span class="move-count">Zug {Math.floor(game.history.moves.length / 2) + 1}</span>
-          </div>
         </section>
 
         <aside class="game-sidebar">
-          <div class="mode-control" role="group" aria-label="Spielmodus">
-            <button
-              type="button"
-              class={mode === 'computer' ? 'mode-button is-active' : 'mode-button'}
-              aria-pressed={mode === 'computer'}
-              onClick={() => mode !== 'computer' && startNewGame('computer')}
-            >
-              Gegen Computer
-            </button>
-            <button
-              type="button"
-              class={mode === 'local' ? 'mode-button is-active' : 'mode-button'}
-              aria-pressed={mode === 'local'}
-              onClick={() => mode !== 'local' && startNewGame('local')}
-            >
-              Zu zweit
-            </button>
-          </div>
-
           <div class="turn-panel" aria-live="polite">
             <span class={`turn-indicator${gameOver ? ' is-finished' : ''}`} />
             <div>
@@ -177,22 +104,24 @@ export function App() {
             </div>
           </div>
 
-          {computerError && <p class="game-error" role="alert">Der Computerzug ist fehlgeschlagen. Starte bitte ein neues Spiel.</p>}
-
-          <div class="scoreboard" aria-label="Spielsteine">
+          <div class="scoreboard" aria-label="Spielstand">
             <div class="score-row">
-              <span><i class="player-swatch swatch-dark" /> Dunkel</span>
-              <strong>{darkPieces}<small> / 12</small></strong>
+              <span><i class="player-swatch swatch-x" /> X</span>
+              <strong>{scores.X}</strong>
             </div>
             <div class="score-row">
-              <span><i class="player-swatch swatch-light" /> Rot</span>
-              <strong>{lightPieces}<small> / 12</small></strong>
+              <span><i class="player-swatch swatch-o" /> O</span>
+              <strong>{scores.O}</strong>
+            </div>
+            <div class="score-row">
+              <span>Unentschieden</span>
+              <strong>{scores.draw}</strong>
             </div>
           </div>
 
           <div class="sidebar-footer">
-            <span>{mode === 'computer' ? 'COMPUTERGEGNER' : 'LOKALES DUELL'}</span>
-            <span>{game.history.moves.length} Züge gespielt</span>
+            <span>LOKALES DUELL · ABWECHSELND</span>
+            <button type="button" onClick={() => setScores({ X: 0, O: 0, draw: 0 })}>Stand zurücksetzen</button>
           </div>
         </aside>
       </div>
