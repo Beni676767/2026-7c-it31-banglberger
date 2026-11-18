@@ -7,5 +7,8 @@
   { "id": 6, "title": "Per iframe einbetten", "category": "Deployment", "note": "Statischer Build in eine HTML-Seite einbinden.", "done": false, "createdAt": "2026-10-19T08:25:00.000Z" },
   { "id": 7, "title": "Dame-Grundregeln", "category": "Checkers", "note": "Zugregeln und Schlagmöglichkeiten sammeln.", "done": false, "createdAt": "2026-10-19T08:30:00.000Z" },
   { "id": 8, "title": "Internationale Dame", "category": "Varianten", "note": "Die Unterschiede zum klassischen Checkers vergleichen.", "done": false, "createdAt": "2026-10-19T08:35:00.000Z" },
-  { "id": 9, "title": "Eröffnungen trainieren", "category": "Strategie", "note": "Sichere erste Züge für beide Seiten ausprobieren.", "done": false, "createdAt": "2026-10-19T08:40:00.000Z" }
+  { "id": 9, "title": "Eröffnungen trainieren", "category": "Strategie", "note": "Sichere erste Züge für beide Seiten ausprobieren.", "done": false, "createdAt": "2026-10-19T08:40:00.000Z" },
+  { "id": 10, "title": "Tic-Tac-Toe-Meisterschaft", "category": "Gaming", "note": "Eine Runde X gegen O abwechselnd spielen.", "done": false, "createdAt": "2026-11-18T08:45:00.000Z" },
+  { "id": 11, "title": "Neue Gaming-Runde starten", "category": "Gaming", "note": "Das leere Spielfeld für eine neue Partie vorbereiten.", "done": false, "createdAt": "2026-11-18T08:50:00.000Z" },
+  { "id": 12, "title": "Beste Zugkombination finden", "category": "Gaming", "note": "Eine Reihe aus drei gleichen Zeichen bilden.", "done": false, "createdAt": "2026-11-18T08:55:00.000Z" }
 ]
