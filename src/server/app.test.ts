@@ -22,6 +22,57 @@ describe('API', () => {
     expect(body).toHaveLength(1)
   })
 
-  // TODO Aufgabe 5: Schreibe Tests für POST (201 + 400 bei leerem Titel), PATCH und DELETE.
-  // Vorlage: snippets/05-api.test.ts
+  it('POST legt einen gültigen Eintrag mit 201 an', async () => {
+    const res = await app().request('/api/items', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: 'Tic-Tac-Toe spielen', rating: 5 }),
+    })
+
+    expect(res.status).toBe(201)
+    expect(await res.json()).toMatchObject({ title: 'Tic-Tac-Toe spielen', rating: 5 })
+  })
+
+  it('POST lehnt einen leeren Titel mit 400 ab', async () => {
+    const res = await app().request('/api/items', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: '' }),
+    })
+
+    expect(res.status).toBe(400)
+  })
+
+  it('PATCH verändert einen Eintrag', async () => {
+    const res = await app().request('/api/items/1', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ done: true, rating: 4 }),
+    })
+
+    expect(res.status).toBe(200)
+    expect(await res.json()).toMatchObject({ done: true, rating: 4 })
+  })
+
+  it('PATCH liefert für eine unbekannte ID 404', async () => {
+    const res = await app().request('/api/items/9999', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ done: true }),
+    })
+
+    expect(res.status).toBe(404)
+  })
+
+  it('DELETE löscht einen Eintrag und liefert 204', async () => {
+    const res = await app().request('/api/items/1', { method: 'DELETE' })
+    expect(res.status).toBe(204)
+  })
+
+  it('DELETE liefert beim zweiten Versuch 404', async () => {
+    const api = app()
+    await api.request('/api/items/1', { method: 'DELETE' })
+    const res = await api.request('/api/items/1', { method: 'DELETE' })
+    expect(res.status).toBe(404)
+  })
 })
